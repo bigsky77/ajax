@@ -62,12 +62,16 @@ pub async fn game(env: &env::Env, player: &player::Player) -> Result<(), ErrRepo
         "walk" => {
             println!("You walk forward");
         }
+        "meditate" => {
+            println!("You meditate and grow stronger!");
+        }
+        "summon a god" => {
+            println!("You summon a god");
+        }
         _ => {
-            println!("You {}", actions[selection]);
+            println!("You do nothing");
         }
     }
-
-    println!("You {}", actions[selection]);
 
     Ok(())
 }
