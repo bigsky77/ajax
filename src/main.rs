@@ -16,8 +16,8 @@ async fn main() -> Result<(), ErrReport> {
 
     let env = env::Env::new()?;
 
-    player();
-    game();
+    player.new();
+    //game();
 
     println!("Hello, Ajax!");
 
