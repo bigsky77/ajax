@@ -46,7 +46,7 @@ pub async fn game(env: &env::Env, player: &player::Player) -> Result<(), ErrRepo
 
     println!("You are a standing on a vast desert, with two suns in the sky");
 
-    let action = &[
+    let actions = &[
         "walk",
         "meditate",
         "summon a god",
@@ -54,9 +54,17 @@ pub async fn game(env: &env::Env, player: &player::Player) -> Result<(), ErrRepo
 
     let selection = MultiSelect::with_theme(&ColorfulTheme::default())
         .with_prompt("What would you like to do?")
-        .items(&action[..])
+        .items(&actions[..])
         .interact()
         .unwrap();
+
+    if selection.len() == 0 {
+        println!("You walk forward");
+    } else if selection.len() == 1 {
+        println!("You meditate");
+    } else if selection.len() == 2 {
+        println!("You summon a god");
+    }
 
     Ok(())
 }
