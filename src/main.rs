@@ -4,7 +4,7 @@ mod player;
 use color_eyre::Report;
 use eyre::ErrReport;
 use structopt::StructOpt;
-use dialoguer::{Input, MultiSelect, theme::ColorfulTheme};
+use dialoguer::{Input, Select, MultiSelect, theme::ColorfulTheme};
 
 #[derive(StructOpt)]
 pub struct Cmd {
@@ -52,19 +52,22 @@ pub async fn game(env: &env::Env, player: &player::Player) -> Result<(), ErrRepo
         "summon a god",
     ];
 
-    let selection = MultiSelect::with_theme(&ColorfulTheme::default())
+    let selection = Select::with_theme(&ColorfulTheme::default())
         .with_prompt("What would you like to do?")
         .items(&actions[..])
         .interact()
         .unwrap();
 
-    if selection.len() == 0 {
-        println!("You walk forward");
-    } else if selection.len() == 1 {
-        println!("You meditate");
-    } else if selection.len() == 2 {
-        println!("You summon a god");
+    match actions[selection] {
+        "walk" => {
+            println!("You walk forward");
+        }
+        _ => {
+            println!("You {}", actions[selection]);
+        }
     }
+
+    println!("You {}", actions[selection]);
 
     Ok(())
 }
