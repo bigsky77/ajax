@@ -1,5 +1,3 @@
-
-
 pub enum Class {
     Warrior,
     Mage,
@@ -20,6 +18,13 @@ pub struct Player {
 }
 
 impl Player {
-    
+    pub fn new() -> Player {
+        Player {
+            name: "Ajax".to_string(),
+            class: Class::Warrior,
+            health: 100,
+            damage: 10,
+        }
+    }
 }
 
