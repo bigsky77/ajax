@@ -1,0 +1,13 @@
+[
+    {
+        "inputs": [
+            {
+                "name": "name",
+                "type": "felt"
+            }
+        ],
+        "name": "set_name",
+        "outputs": [],
+        "type": "function"
+    }
+]
