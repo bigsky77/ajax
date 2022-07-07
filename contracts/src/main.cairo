@@ -1,32 +1,11 @@
-%lang starknet
-from starkware.cairo.common.math import assert_nn
-from starkware.cairo.common.cairo_builtins import HashBuiltin
+%builtins output  
 
-@storage_var
-func balance() -> (res : felt):
-end
+from starkware.cairo.common.serialize import serialize_word 
 
-@external
-func increase_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        amount : felt):
-    with_attr error_message("Amount must be positive. Got: {amount}."):
-        assert_nn(amount)
-    end
-
-    let (res) = balance.read()
-    balance.write(res + amount)
+func main{output_ptr : felt*}():
+    serialize_word(1234)
+    serialize_word(4321)
     return ()
 end
 
-@view
-func get_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
-        res : felt):
-    let (res) = balance.read()
-    return (res)
-end
 
-@constructor
-func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
-    balance.write(0)
-    return ()
-end
