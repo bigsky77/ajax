@@ -7,9 +7,10 @@ use starknet::{
 use dialoguer::{Input};
 
 pub struct Env {
-    address: FieldElement,
-    signer: LocalWallet,
-    provider: SequencerGatewayProvider,
+    pub address: FieldElement,
+    pub signer: LocalWallet,
+    pub provider: SequencerGatewayProvider,
+    pub chain_id: FieldElement,
 }
 
 impl Env {

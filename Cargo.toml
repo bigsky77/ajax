@@ -9,6 +9,7 @@ edition = "2021"
 color-eyre = "0.6.1"
 dialoguer = "0.10.1"
 eyre = "0.6.8"
+serde_json = "1.0.82"
 starknet = "0.2.0"
 structopt = "0.3.26"
 tokio = { version = "1.9.0", features = ["full"] }

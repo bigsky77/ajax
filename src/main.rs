@@ -5,6 +5,9 @@ use color_eyre::Report;
 use eyre::ErrReport;
 use structopt::StructOpt;
 use dialoguer::{Input, Select, MultiSelect, theme::ColorfulTheme};
+use starknet::accounts::{Account, Call, SingleOwnerAccount};
+use starknet::core::types::FieldElement;
+use starknet::core::utils::get_selector_from_name;
 
 #[derive(StructOpt)]
 pub struct Cmd {
@@ -63,6 +66,28 @@ pub async fn game(env: &env::Env, player: &player::Player) -> Result<(), ErrRepo
             println!("You walk forward");
         }
         "meditate" => {
+           let hero_contract = FieldElement::from_hex_be(
+               "0x00fda344b6df51e0082a44257b6236b1bacdbb3b7dcbc361b05e6d699e5fa610");
+
+            let account = SingleOwnerAccount::new(
+                &env.provider,
+                &env.signer,
+                env.address,
+                env.chain_id::TESTNET,
+            );
+
+            let result = account
+                .execute(&[Call {
+                    to: hero_contract,
+                    selector: get_selector_from_name("set_health").unwrap(),
+                    calldata: vec![FieldElement::from_dec_str("100").unwrap()],
+                }])
+                .send()
+                .await
+                .unwrap();
+
+            dbg!(result);
+
             println!("You meditate and grow stronger!");
         }
         "summon a god" => {

@@ -24,6 +24,7 @@ dependencies = [
  "color-eyre",
  "dialoguer",
  "eyre",
+ "serde_json",
  "starknet",
  "structopt",
  "tokio",
