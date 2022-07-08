@@ -19,7 +19,7 @@ async fn main() -> Result<(), ErrReport> {
 
     let env = env::Env::new()?;
     let player = player::Player::new();
-
+        
     game(env, player).await?;
 
     println!("Game Over!");
@@ -44,6 +44,10 @@ pub fn set_up() -> Result<(), Report> {
 }
 
 pub async fn game(env: env::Env, player: player::Player) -> Result<(), ErrReport> {
+    let addr = Some(player::deploy_player(&player).await?).unwrap();
+    
+    println!("{:?}", addr.address);
+
     println!("Hello, {} welcome to the most exciting game of your life!", player.name);
 
     println!("You are a standing on a vast desert, with two suns in the sky");
