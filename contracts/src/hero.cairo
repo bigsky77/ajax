@@ -3,20 +3,20 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
 @storage_var
-func hero_name() -> (res : felt):
+func hero_damage() -> (res : felt):
 end
 
 @storage_var 
 func hero_health() -> (res : felt):
 end
 
-@external
-func set_name{
+v@external
+func set_damage{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr, 
 }(name : felt):
-    hero_name.write(name)  
+    hero_damage.write(damage)  
     return()
 end
 
@@ -31,12 +31,12 @@ func set_health{
 end
 
 @view 
-func view_name{
+func view_damage{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
 }() -> (res : felt):
-    let (res) = hero_name.read()
+    let (res) = hero_damage.read()
     return (res=res)
 end
 
