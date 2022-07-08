@@ -1,7 +1,7 @@
 use eyre::{Result, ErrReport};
 use starknet::{
         providers::{SequencerGatewayProvider},
-        core::types::{FieldElement},
+        core::{chain_id, types::FieldElement},
         signers::{LocalWallet, SigningKey},
 };
 use dialoguer::{Input};
@@ -18,11 +18,13 @@ impl Env {
         let provider = SequencerGatewayProvider::starknet_alpha_goerli();
         let signer = get_signer();
         let address = get_address();
+        let chain_id = chain_id::TESTNET;
 
         Ok(Env {
             address,
             signer,
             provider,
+            chain_id,
         })
     }
 }

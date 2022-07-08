@@ -6,8 +6,7 @@ use eyre::ErrReport;
 use structopt::StructOpt;
 use dialoguer::{Input, Select, MultiSelect, theme::ColorfulTheme};
 use starknet::accounts::{Account, Call, SingleOwnerAccount};
-use starknet::core::types::FieldElement;
-use starknet::core::utils::get_selector_from_name;
+use starknet::core::{chain_id, types::FieldElement, utils::get_selector_from_name};
 
 #[derive(StructOpt)]
 pub struct Cmd {
@@ -21,7 +20,7 @@ async fn main() -> Result<(), ErrReport> {
     let env = env::Env::new()?;
     let player = player::Player::new();
 
-    game(&env, &player).await?;
+    game(env, player).await?;
 
     println!("Game Over!");
 
@@ -44,7 +43,7 @@ pub fn set_up() -> Result<(), Report> {
     Ok(())
 }
 
-pub async fn game(env: &env::Env, player: &player::Player) -> Result<(), ErrReport> {
+pub async fn game(env: env::Env, player: player::Player) -> Result<(), ErrReport> {
     println!("Hello, {} welcome to the most exciting game of your life!", player.name);
 
     println!("You are a standing on a vast desert, with two suns in the sky");
@@ -67,13 +66,14 @@ pub async fn game(env: &env::Env, player: &player::Player) -> Result<(), ErrRepo
         }
         "meditate" => {
            let hero_contract = FieldElement::from_hex_be(
-               "0x00fda344b6df51e0082a44257b6236b1bacdbb3b7dcbc361b05e6d699e5fa610");
+               "0x00fda344b6df51e0082a44257b6236b1bacdbb3b7dcbc361b05e6d699e5fa610")
+               .unwrap();
 
             let account = SingleOwnerAccount::new(
-                &env.provider,
-                &env.signer,
+                env.provider,
+                env.signer,
                 env.address,
-                env.chain_id::TESTNET,
+                chain_id::TESTNET,
             );
 
             let result = account
