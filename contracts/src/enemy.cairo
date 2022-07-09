@@ -9,14 +9,14 @@ end
 @storage_var 
 func health() -> (enemy_health : felt):
 end
-
+  
 @constructor 
 func constructor{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
     }(enemy_health : felt):
-        enemy.write(value=enemy_health)
+        health.write(value=enemy_health)
         return()
 end
 

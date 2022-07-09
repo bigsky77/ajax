@@ -23,8 +23,8 @@ pub struct Cmd {
 async fn main() -> Result<(), ErrReport> {
     set_up()?;
     
-     let contract_artifact: ContractArtifact =
-        serde_json::from_reader(std::fs::File::open("./contracts/src/hero_compiled.json").unwrap())
+    let contract_artifact: ContractArtifact =
+        serde_json::from_reader(std::fs::File::open("contracts/src/hero_compiled.json").unwrap())
             .unwrap();
 
     let provider = SequencerGatewayProvider::starknet_alpha_goerli();
@@ -63,9 +63,6 @@ pub fn set_up() -> Result<(), Report> {
 
 pub async fn game(env: env::Env, player: &player::Player, hero_contract: AddTransactionResult) -> Result<(), ErrReport> {
 
-    println!("contract address: {:?}", Some(hero_contract.address));
-    println!("contract hash: {:?} ", Some(hero_contract.transaction_hash));
-
     let account = SingleOwnerAccount::new(
         env.provider,
         env.signer,
@@ -91,7 +88,9 @@ pub async fn game(env: env::Env, player: &player::Player, hero_contract: AddTran
 
     match actions[selection] {
         "walk" => {
-            println!("You walk forward");
+            println!("You walk forward into the desert");
+
+            enemy().await;
         }
         "meditate" => {
             let result = account
@@ -108,8 +107,19 @@ pub async fn game(env: env::Env, player: &player::Player, hero_contract: AddTran
             println!("You meditate and grow stronger!");
         }
         "summon a god" => {
-            println!("You summon a god");
-        }
+            let result = account 
+                .execute(&[Call {
+                    to: hero_contract.address.expect("unable to get address"),
+                    selector: get_selector_from_name("set_damage").unwrap(),
+                    calldata: vec![FieldElement::from_dec_str("20").unwrap()],
+                }])
+                .send()
+                .await
+                .expect("unable to send transaction");
+
+            dbg!(result);
+            println!("You summon a the god of STARKNET and he increases your power!");
+        } 
         _ => {
             println!("You do nothing");
         }
@@ -117,6 +127,24 @@ pub async fn game(env: env::Env, player: &player::Player, hero_contract: AddTran
     Ok(())
 }
 
+pub async fn enemy() -> AddTransactionResult {
+    println!("A giant Phoenix flying low over the desert spots you!");
+    
+     let contract_artifact: ContractArtifact =
+        serde_json::from_reader(std::fs::File::open("contracts/src/enemy_compiled.json").unwrap())
+            .unwrap();
 
+    let provider = SequencerGatewayProvider::starknet_alpha_goerli();
+    let contract_factory = ContractFactory::new(contract_artifact, provider).unwrap();
+
+    let enemy_contract = contract_factory
+        .deploy(vec![FieldElement::from_dec_str("1").unwrap()],None)
+        .await
+        .expect("cannot deploy contract"); 
+
+    println!("enemy information {:?}", enemy_contract.address);
+
+    enemy_contract
+}
 
 
