@@ -3,7 +3,7 @@ use starknet::{
     core::{chain_id, types::{FieldElement, AddTransactionResult, ContractArtifact}, utils::get_selector_from_name},
     providers::{Provider, SequencerGatewayProvider},
 };
-use serde_json::{from_reader, Result};
+use serde_json::*;
 use eyre::{ErrReport};
 
 pub enum Class {
@@ -37,9 +37,10 @@ impl Player {
     }
 }
 
+#[tokio::main]
 pub async fn deploy() -> Result<AddTransactionResult> {
     let contract_artifact: ContractArtifact =
-        serde_json::from_reader(std::fs::File::open("../ajax/contracts/src/hero_compiled.json").unwrap())
+        serde_json::from_reader(std::fs::File::open("contracts/src/hero_compiled.json").unwrap())
             .unwrap();
 
     let provider = SequencerGatewayProvider::starknet_alpha_goerli();

@@ -5,8 +5,14 @@ use color_eyre::Report;
 use eyre::ErrReport;
 use structopt::StructOpt;
 use dialoguer::{Input, Select, MultiSelect, theme::ColorfulTheme};
-use starknet::accounts::{Account, Call, SingleOwnerAccount};
-use starknet::core::{chain_id, types::FieldElement, utils::get_selector_from_name};
+
+use starknet::{
+    contract::ContractFactory,
+    core::{chain_id, types::{ContractArtifact, FieldElement, AddTransactionResult}, utils::get_selector_from_name},
+    providers::SequencerGatewayProvider,
+    accounts::{Account, Call, SingleOwnerAccount},
+};
+
 
 #[derive(StructOpt)]
 pub struct Cmd {
@@ -16,11 +22,23 @@ pub struct Cmd {
 #[tokio::main]
 async fn main() -> Result<(), ErrReport> {
     set_up()?;
+    
+     let contract_artifact: ContractArtifact =
+        serde_json::from_reader(std::fs::File::open("./contracts/src/hero_compiled.json").unwrap())
+            .unwrap();
+
+    let provider = SequencerGatewayProvider::starknet_alpha_goerli();
+    let contract_factory = ContractFactory::new(contract_artifact, provider).unwrap();
+
+    let hero_contract = contract_factory
+        .deploy(vec![FieldElement::from_dec_str("1").unwrap()],None)
+        .await
+        .expect("cannot deploy contract"); 
 
     let env = env::Env::new()?;
     let player = player::Player::new();
 
-    game(env, &player).await?;
+    game(env, &player, hero_contract).await?;
 
     println!("Game Over!");
 
@@ -43,11 +61,10 @@ pub fn set_up() -> Result<(), Report> {
     Ok(())
 }
 
-pub async fn game(env: env::Env, player: &player::Player) -> Result<(), ErrReport> {
-    let addr = player::deploy().await?;
+pub async fn game(env: env::Env, player: &player::Player, hero_contract: AddTransactionResult) -> Result<(), ErrReport> {
 
-    println!("contract address: {:?}", Some(addr.address));
-    println!("contract hash: {:?} ", Some(addr.transaction_hash));
+    println!("contract address: {:?}", Some(hero_contract.address));
+    println!("contract hash: {:?} ", Some(hero_contract.transaction_hash));
 
     let account = SingleOwnerAccount::new(
         env.provider,
@@ -55,8 +72,6 @@ pub async fn game(env: env::Env, player: &player::Player) -> Result<(), ErrRepor
         env.address,
         chain_id::TESTNET,
     );
-
-    println!("{:?}", Some(addr.code));
 
     println!("Hello, {} welcome to the most exciting game of your life!", player.name);
 
@@ -81,7 +96,7 @@ pub async fn game(env: env::Env, player: &player::Player) -> Result<(), ErrRepor
         "meditate" => {
             let result = account
                 .execute(&[Call {
-                    to: addr.address.expect("Unable to get address"),
+                    to: hero_contract.address.expect("Unable to get address"),
                     selector: get_selector_from_name("set_health").unwrap(),
                     calldata: vec![FieldElement::from_dec_str("100").unwrap()],
                 }])
