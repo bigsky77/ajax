@@ -10,9 +10,9 @@ color-eyre = "0.6.1"
 dialoguer = "0.10.1"
 eyre = "0.6.8"
 serde_json = "1.0.82"
-starknet = "0.2.0"
 structopt = "0.3.26"
 tokio = { version = "1.9.0", features = ["full"] }
 tokio-rustls = "0.22.0"
 tracing = "0.1.26"
 tracing-subscriber = "0.2.19"
+starknet = { git = "https://github.com/xJonathanLEI/starknet-rs" }

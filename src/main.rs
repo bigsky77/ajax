@@ -19,7 +19,7 @@ async fn main() -> Result<(), ErrReport> {
 
     let env = env::Env::new()?;
     let player = player::Player::new();
-        
+
     game(env, &player).await?;
 
     println!("Game Over!");
@@ -44,7 +44,14 @@ pub fn set_up() -> Result<(), Report> {
 }
 
 pub async fn game(env: env::Env, player: &player::Player) -> Result<(), ErrReport> {
-    let addr = player::deploy_player(&player).await?;
+    let addr = player::deploy_player().await?;
+
+    let account = SingleOwnerAccount::new(
+        env.provider,
+        env.signer,
+        env.address,
+        chain_id::TESTNET,
+    );
 
     println!("{:?}", Some(addr.code));
 
@@ -69,14 +76,6 @@ pub async fn game(env: env::Env, player: &player::Player) -> Result<(), ErrRepor
             println!("You walk forward");
         }
         "meditate" => {
-
-            let account = SingleOwnerAccount::new(
-                env.provider,
-                env.signer,
-                env.address,
-                chain_id::TESTNET,
-            );
-
             let result = account
                 .execute(&[Call {
                     to: addr.address.expect("Unable to get address"),
@@ -88,7 +87,6 @@ pub async fn game(env: env::Env, player: &player::Player) -> Result<(), ErrRepor
                 .expect("Unable to send transaction");
 
             dbg!(result);
-
             println!("You meditate and grow stronger!");
         }
         "summon a god" => {
@@ -98,7 +96,6 @@ pub async fn game(env: env::Env, player: &player::Player) -> Result<(), ErrRepor
             println!("You do nothing");
         }
     }
-
     Ok(())
 }
 
