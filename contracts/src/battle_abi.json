@@ -1,0 +1,62 @@
+[
+    {
+        "inputs": [
+            {
+                "name": "contract_address",
+                "type": "felt"
+            },
+            {
+                "name": "hero_health",
+                "type": "felt"
+            }
+        ],
+        "name": "call_set_hero_health",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "contract_address",
+                "type": "felt"
+            },
+            {
+                "name": "enemy_health",
+                "type": "felt"
+            }
+        ],
+        "name": "call_set_enemy_health",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "contract_address",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "felt"
+            }
+        ],
+        "name": "view_hero_health",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "contract_address",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "felt"
+            }
+        ],
+        "name": "view_enemy_health",
+        "outputs": [],
+        "type": "function"
+    }
+]

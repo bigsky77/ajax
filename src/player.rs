@@ -37,7 +37,7 @@ impl Player {
     }
 }
 
-pub async fn deploy_player() -> Result<AddTransactionResult> {
+pub async fn deploy() -> Result<AddTransactionResult> {
     let contract_artifact: ContractArtifact =
         serde_json::from_reader(std::fs::File::open("../ajax/contracts/src/hero_compiled.json").unwrap())
             .unwrap();
@@ -46,9 +46,9 @@ pub async fn deploy_player() -> Result<AddTransactionResult> {
     let contract_factory = ContractFactory::new(contract_artifact, provider).unwrap();
 
     let result = contract_factory
-        .deploy(vec![FieldElement::from_dec_str("").unwrap()],None)
+        .deploy(vec![FieldElement::from_dec_str("1").unwrap()],None)
         .await
-        .expect("Unable to deploy contract");
+        .expect("cannot deploy contract"); 
 
     Ok(result)
 }

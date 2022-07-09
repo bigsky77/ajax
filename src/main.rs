@@ -44,7 +44,10 @@ pub fn set_up() -> Result<(), Report> {
 }
 
 pub async fn game(env: env::Env, player: &player::Player) -> Result<(), ErrReport> {
-    let addr = player::deploy_player().await?;
+    let addr = player::deploy().await?;
+
+    println!("contract address: {:?}", Some(addr.address));
+    println!("contract hash: {:?} ", Some(addr.transaction_hash));
 
     let account = SingleOwnerAccount::new(
         env.provider,

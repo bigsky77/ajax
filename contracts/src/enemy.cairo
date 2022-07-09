@@ -3,11 +3,11 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
 @storage_var
-func damage() -> (hero_damage : felt):
+func damage() -> (enemy_damage : felt):
 end
 
 @storage_var 
-func health() -> (hero_health : felt):
+func health() -> (enemy_health : felt):
 end
 
 @constructor 
@@ -15,8 +15,8 @@ func constructor{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
-    }(hero_health : felt):
-        health.write(value=hero_health)
+    }(enemy_health : felt):
+        enemy.write(value=enemy_health)
         return()
 end
 
@@ -25,8 +25,8 @@ func set_damage{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr, 
-}(hero_damage : felt):
-    damage.write(hero_damage)  
+}(enemy_damage : felt):
+    damage.write(enemy_damage)  
     return()
 end
 
@@ -35,8 +35,8 @@ func set_health{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,        
-}(hero_health : felt):
-    health.write(hero_health)
+}(enemy_health : felt):
+    health.write(enemy_health)
     return()
 end
 
