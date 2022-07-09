@@ -20,7 +20,7 @@ async fn main() -> Result<(), ErrReport> {
     let env = env::Env::new()?;
     let player = player::Player::new();
         
-    game(env, player).await?;
+    game(env, &player).await?;
 
     println!("Game Over!");
 
@@ -43,10 +43,10 @@ pub fn set_up() -> Result<(), Report> {
     Ok(())
 }
 
-pub async fn game(env: env::Env, player: player::Player) -> Result<(), ErrReport> {
-    let addr = Some(player::deploy_player(&player).await?).unwrap();
-    
-    println!("{:?}", addr.address);
+pub async fn game(env: env::Env, player: &player::Player) -> Result<(), ErrReport> {
+    let addr = player::deploy_player(&player).await?;
+
+    println!("{:?}", Some(addr.code));
 
     println!("Hello, {} welcome to the most exciting game of your life!", player.name);
 
@@ -69,9 +69,6 @@ pub async fn game(env: env::Env, player: player::Player) -> Result<(), ErrReport
             println!("You walk forward");
         }
         "meditate" => {
-           let hero_contract = FieldElement::from_hex_be(
-               "0x00fda344b6df51e0082a44257b6236b1bacdbb3b7dcbc361b05e6d699e5fa610")
-               .unwrap();
 
             let account = SingleOwnerAccount::new(
                 env.provider,
@@ -82,13 +79,13 @@ pub async fn game(env: env::Env, player: player::Player) -> Result<(), ErrReport
 
             let result = account
                 .execute(&[Call {
-                    to: hero_contract,
+                    to: addr.address.expect("Unable to get address"),
                     selector: get_selector_from_name("set_health").unwrap(),
                     calldata: vec![FieldElement::from_dec_str("100").unwrap()],
                 }])
                 .send()
                 .await
-                .unwrap();
+                .expect("Unable to send transaction");
 
             dbg!(result);
 

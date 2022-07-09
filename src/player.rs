@@ -37,7 +37,6 @@ impl Player {
     }
 }
 
-
 pub async fn deploy_player(player: &Player) -> Result<AddTransactionResult> {
     let contract_artifact: ContractArtifact =
         serde_json::from_reader(std::fs::File::open("../ajax/contracts/src/hero_compiled.json").unwrap())
@@ -45,12 +44,13 @@ pub async fn deploy_player(player: &Player) -> Result<AddTransactionResult> {
 
     let provider = SequencerGatewayProvider::starknet_alpha_goerli();
 
-    let contract_factory = ContractFactory::new(contract_artifact, provider)
-        .unwrap()
-        .deploy(vec![FieldElement::from_dec_str("123456").unwrap()], None)
-        .await.expect("Unable to deploy contract");
+    let contract_factory = ContractFactory::new(contract_artifact, provider).unwrap();
+    let result = contract_factory
+        .deploy(vec![FieldElement::from_dec_str("1").unwrap()],None)
+        .await
+        .expect("Unable to deploy contract");
 
-    Ok(contract_factory)
+    Ok(result)
 }
 
 
