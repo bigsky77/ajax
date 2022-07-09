@@ -90,7 +90,9 @@ pub async fn game(env: env::Env, player: &player::Player, hero_contract: AddTran
         "walk" => {
             println!("You walk forward into the desert");
 
-            enemy().await;
+            let enemy_contract = enemy().await;
+
+            start_battle(hero_contract, enemy_contract, &account);
         }
         "meditate" => {
             let result = account
@@ -138,7 +140,7 @@ pub async fn enemy() -> AddTransactionResult {
     let contract_factory = ContractFactory::new(contract_artifact, provider).unwrap();
 
     let enemy_contract = contract_factory
-        .deploy(vec![FieldElement::from_dec_str("1").unwrap()],None)
+        .deploy(vec![FieldElement::from_dec_str("10").unwrap()],None)
         .await
         .expect("cannot deploy contract"); 
 
@@ -146,5 +148,54 @@ pub async fn enemy() -> AddTransactionResult {
 
     enemy_contract
 }
+
+pub async fn start_battle(hero: AddTransactionResult, enemy: AddTransactionResult, account: SingleOwnerAccount) -> Result<(), ErrReport> {
+    println!("the giant Phoenix sweeps down towards you!  You draw your spear and ready yourself for battle!");
+
+    let contract_artifact: ContractArtifact =
+        serde_json::from_reader(std::fs::File::open("contracts/src/battle_compiled.json").unwrap())
+            .unwrap();
+
+    let provider = SequencerGatewayProvider::starknet_alpha_goerli();
+    let contract_factory = ContractFactory::new(contract_artifact, provider).unwrap();
+    
+    let battle_contract = contract_factory 
+        .deploy(vec![FieldElement::from_dec_str("").unwrap()], None)
+        .await
+        .expect("cannot deploy contract");
+
+     let actions = &[
+        "throw spear!",
+        "raise your sheild and defend!",
+        "summon a god!",
+    ];
+
+    let selection = Select::with_theme(&ColorfulTheme::default())
+        .with_prompt("What would you like to do?")
+        .items(&actions[..])
+        .interact()
+        .unwrap();
+
+    match actions[selection] {
+        "throw a spear!" => {
+            let result = account 
+                .execute(&[Call {
+                    to:battle_contract.address.expect("unable to get address"),
+                    selector: get_selector_from_name("take_damage").unwrap(),
+                    calldata: vec![FieldElement::from_dec_str(enemy.address).unwrap()],
+                }])
+                .send()
+                .await
+                .expect("unable to send transaction");
+
+            dbg!(result);
+            println!("You throw a spear and it jabs into the Phoenix's side!");
+
+        } 
+    }         
+
+    Ok(())
+}
+
 
 

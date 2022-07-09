@@ -40,6 +40,17 @@ func set_health{
     return()
 end
 
+@external
+func take_damage{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*, 
+        range_check_ptr,
+}(damage : felt):
+    let (res) = health.read()
+    health.write(res - damage)
+    return()
+end
+
 @view 
 func view_damage{
         syscall_ptr : felt*,
