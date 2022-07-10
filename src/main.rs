@@ -12,6 +12,8 @@ use starknet::{
     providers::SequencerGatewayProvider,
     accounts::{Account, Call, SingleOwnerAccount},
 };
+use starknet::providers::Provider;
+use starknet::signers::LocalWallet;
 
 
 #[derive(StructOpt)]
@@ -92,7 +94,7 @@ pub async fn game(env: env::Env, player: &player::Player, hero_contract: AddTran
 
             let enemy_contract = enemy().await;
 
-            start_battle(hero_contract, enemy_contract, &account);
+            start_battle(hero_contract, enemy_contract,  account).await?;
         }
         "meditate" => {
             let result = account
@@ -149,7 +151,7 @@ pub async fn enemy() -> AddTransactionResult {
     enemy_contract
 }
 
-pub async fn start_battle(hero: AddTransactionResult, enemy: AddTransactionResult, account: SingleOwnerAccount) -> Result<(), ErrReport> {
+pub async fn start_battle(hero: AddTransactionResult, enemy: AddTransactionResult, account: SingleOwnerAccount<SequencerGatewayProvider, LocalWallet> ) -> Result<(), ErrReport> {
     println!("the giant Phoenix sweeps down towards you!  You draw your spear and ready yourself for battle!");
 
     let contract_artifact: ContractArtifact =
@@ -182,7 +184,7 @@ pub async fn start_battle(hero: AddTransactionResult, enemy: AddTransactionResul
                 .execute(&[Call {
                     to:battle_contract.address.expect("unable to get address"),
                     selector: get_selector_from_name("take_damage").unwrap(),
-                    calldata: vec![FieldElement::from_dec_str(enemy.address).unwrap()],
+                    calldata: vec![(enemy.address).unwrap()],
                 }])
                 .send()
                 .await
@@ -190,12 +192,48 @@ pub async fn start_battle(hero: AddTransactionResult, enemy: AddTransactionResul
 
             dbg!(result);
             println!("You throw a spear and it jabs into the Phoenix's side!");
+        }
+        "raise your sheild and defend!" => {
+            let result = account
+                .execute(&[Call {
+                    to:battle_contract.address.expect("unable to get address"),
+                    selector: get_selector_from_name("take_damage").unwrap(),
+                    calldata: vec![(enemy.address).unwrap()],
+                }])
+                .send()
+                .await
+                .expect("unable to send transaction");
 
-        } 
+            dbg!(result);
+            println!("You raise your shield and defend!");
+        }
+        "summon a god!" => {
+            let result = account
+                .execute(&[Call {
+                    to:battle_contract.address.expect("unable to get address"),
+                    selector: get_selector_from_name("take_damage").unwrap(),
+                    calldata: vec![(enemy.address).unwrap()],
+                }])
+                .send()
+                .await
+                .expect("unable to send transaction");
+
+            dbg!(result);
+            println!("You summon a the god of STARKNET and he throws lightning at the phoenix!");
+        }
+        _ => {
+            println!("You do nothing");
+        }
     }         
 
     Ok(())
 }
+/*
+pub async fn check_health(hero: AddTransactionResult, enemy: AddTransactionResult, account: SingleOwnerAccount<SequencerGatewayProvider, LocalWallet>) -> Result<(), ErrReport> {
+    let hero_health = account.provider().call_contract(hero.address.unwrap()).await?;
 
+    dbg!(hero_health);
+    Ok(())
+}*/
 
 
